@@ -1,0 +1,41 @@
+# render.yaml - Configuración para Render Blueprint
+
+services:
+  # ============================================
+  # SERVICIO 1: BACKEND (API)
+  # ============================================
+  - type: web
+    name: centinela-backend
+    runtime: python
+    repo: https://github.com/Aixa11/Centinela-Demo
+    branch: main
+    plan: free
+    healthCheckPath: /
+    buildCommand: |
+      cd backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd backend
+      uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: PORT
+        value: 8000
+
+  # ============================================
+  # SERVICIO 2: FRONTEND (Dashboard)
+  # ============================================
+  - type: web
+    name: centinela-frontend
+    runtime: static
+    repo: https://github.com/Aixa11/Centinela-Demo
+    branch: main
+    plan: free
+    buildCommand: |
+      cd frontend
+      # No hay build necesario para HTML puro
+    staticPublishPath: ./frontend
+    envVars:
+      - key: API_URL
+        value: https://centinela-backend.onrender.com
