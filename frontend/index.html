@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Centinela - Critical Infrastructure Monitor</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛰️</text></svg>" />
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <i class="fas fa-satellite"></i>
+            <span>Centinela</span>
+            <span class="subtitle">Critical Infrastructure</span>
+            <span class="version">v3.0</span>
+        </div>
+        <div class="header-controls">
+            <span class="status-badge" id="systemStatus"><i class="fas fa-circle"></i> System Online</span>
+            <span class="user-info" id="userInfo"><i class="fas fa-user"></i> <span id="usernameDisplay">Guest</span></span>
+            <button id="refreshBtn" class="btn-secondary"><i class="fas fa-sync"></i></button>
+            <button id="loginBtn" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
+        </div>
+    </header>
+
+    <main>
+        <section class="metrics-grid">
+            <div class="metric-card"><div class="metric-icon"><i class="fas fa-microchip"></i></div><div class="metric-content"><span class="metric-value" id="totalAssets">0</span><span class="metric-label">Assets</span></div></div>
+            <div class="metric-card alert-count"><div class="metric-icon"><i class="fas fa-exclamation-triangle"></i></div><div class="metric-content"><span class="metric-value" id="activeAlerts">0</span><span class="metric-label">Alerts</span></div></div>
+            <div class="metric-card critical"><div class="metric-icon"><i class="fas fa-skull-crossbones"></i></div><div class="metric-content"><span class="metric-value" id="criticalAssets">0</span><span class="metric-label">Critical</span></div></div>
+            <div class="metric-card"><div class="metric-icon"><i class="fas fa-shield-alt"></i></div><div class="metric-content"><span class="metric-value" id="uptime">99.99%</span><span class="metric-label">Uptime</span></div></div>
+            <div class="metric-card"><div class="metric-icon"><i class="fas fa-clock"></i></div><div class="metric-content"><span class="metric-value" id="lastUpdate">--:--:--</span><span class="metric-label">Updated</span></div></div>
+        </section>
+
+        <section class="dashboard-main">
+            <div class="map-container">
+                <div id="map"></div>
+                <div class="map-legend">
+                    <span><span class="dot green"></span> Operational</span>
+                    <span><span class="dot yellow"></span> Alert</span>
+                    <span><span class="dot red"></span> Critical</span>
+                    <span><span class="dot purple"></span> Vulnerable</span>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="panel-section" id="authSection">
+                    <h3><i class="fas fa-lock"></i> Access</h3>
+                    <div id="loginForm">
+                        <input type="text" id="loginUsername" placeholder="Username" class="form-input" />
+                        <input type="password" id="loginPassword" placeholder="Password" class="form-input" />
+                        <button id="loginSubmitBtn" class="btn-primary full-width"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                        <div class="demo-credentials"><small>admin / admin123 | analyst / analyst123</small></div>
+                    </div>
+                    <div id="logoutSection" style="display:none;">
+                        <p><i class="fas fa-check-circle" style="color:var(--success);"></i> Connected as <strong id="loggedUser">admin</strong></p>
+                        <button id="logoutBtn" class="btn-secondary full-width"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                    </div>
+                </div>
+
+                <div class="panel-section">
+                    <h3><i class="fas fa-sliders-h"></i> Simulation</h3>
+                    <div class="scenario-selector">
+                        <button class="scenario-btn active" data-scenario="normal"><i class="fas fa-check-circle"></i> Normal</button>
+                        <button class="scenario-btn" data-scenario="ciberataque"><i class="fas fa-hacker-group"></i> Cyber</button>
+                        <button class="scenario-btn" data-scenario="desastre_natural"><i class="fas fa-cloud-rain"></i> Disaster</button>
+                        <button class="scenario-btn" data-scenario="mixto"><i class="fas fa-biohazard"></i> Mixed</button>
+                    </div>
+                    <div class="intensity-control">
+                        <label>Intensity: <span id="intensityLabel">3</span></label>
+                        <input type="range" id="intensitySlider" min="1" max="5" value="3" />
+                    </div>
+                    <button id="simulateStepBtn" class="btn-primary full-width"><i class="fas fa-forward"></i> Run Step</button>
+                    <button id="autoSimulateBtn" class="btn-secondary full-width"><i class="fas fa-play"></i> Auto</button>
+                </div>
+
+                <div class="panel-section">
+                    <h3><i class="fas fa-bell"></i> Recent Alerts <span class="alert-badge" id="alertCount">0</span></h3>
+                    <div id="alertsList" class="alerts-list"><div class="no-alerts">All clear</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bottom-section">
+            <div class="distribution-panel">
+                <h3><i class="fas fa-chart-pie"></i> By Type</h3>
+                <div id="typeDistribution" class="distribution-content">
+                    <div class="dist-item"><span class="dist-label">Pipeline</span><span class="dist-value" id="dist-oleoducto">0</span></div>
+                    <div class="dist-item"><span class="dist-label">Power</span><span class="dist-value" id="dist-electrica">0</span></div>
+                    <div class="dist-item"><span class="dist-label">Comms</span><span class="dist-value" id="dist-comunicaciones">0</span></div>
+                    <div class="dist-item"><span class="dist-label">Transport</span><span class="dist-value" id="dist-transporte">0</span></div>
+                    <div class="dist-item"><span class="dist-label">Water</span><span class="dist-value" id="dist-agua">0</span></div>
+                    <div class="dist-item"><span class="dist-label">Gas</span><span class="dist-value" id="dist-gas">0</span></div>
+                </div>
+            </div>
+            <div class="log-section">
+                <h3><i class="fas fa-terminal"></i> Activity Log</h3>
+                <div id="activityLog" class="log-container">
+                    <div class="log-entry"><span class="time">[SYSTEM]</span> Initializing Centinela v3.0...</div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2><i class="fas fa-shield-alt"></i> Sign In</h2>
+            <form id="modalLoginForm">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="modalUsername" placeholder="Enter username" required />
+                </div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="modalPassword" placeholder="Enter password" required />
+                </div>
+                <button type="submit" class="btn-primary full-width"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+                <div class="demo-credentials"><small>admin / admin123 | analyst / analyst123 | viewer / viewer123</small></div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

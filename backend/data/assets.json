@@ -1,0 +1,5 @@
+﻿[
+  {"id": "550e8400-e29b-41d4-a716-446655440000", "name": "Vaca Muerta Pipeline", "type": "oleoducto", "lat": -38.9, "lng": -69.1, "status": "operativo", "criticality": 5, "description": "Main Neuquen basin pipeline"},
+  {"id": "550e8400-e29b-41d4-a716-446655440001", "name": "Atucha I Power Plant", "type": "electrica", "lat": -33.9, "lng": -59.2, "status": "operativo", "criticality": 5, "description": "Nuclear power plant"},
+  {"id": "550e8400-e29b-41d4-a716-446655440002", "name": "CABA Fiber Optic Node", "type": "comunicaciones", "lat": -34.6, "lng": -58.4, "status": "operativo", "criticality": 4, "description": "Main communications node"}
+]
