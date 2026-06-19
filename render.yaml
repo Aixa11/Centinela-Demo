@@ -1,13 +1,12 @@
-# render.yaml - Configuración para Render Blueprint
-
+# render.yaml - Configuración sin plan explícito (usa free por defecto)
 services:
   # ============================================
-  # SERVICIO 1: BACKEND (API) 
+  # SERVICIO 1: BACKEND (API)
   # ============================================
   - type: web
     name: centinela-backend
     runtime: python
-    plan: free                         
+    # plan: free  <--- ELIMINADO
     healthCheckPath: /
     buildCommand: |
       cd backend
@@ -18,15 +17,15 @@ services:
         value: 3.11.0
 
   # ============================================
-  # SERVICIO 2: FRONTEND (Dashboard) 
+  # SERVICIO 2: FRONTEND (Dashboard)
   # ============================================
   - type: web
     name: centinela-frontend
     runtime: static
-    plan: free                        
+    # plan: free  <--- ELIMINADO
     buildCommand: |
       cd frontend
-      # Sin pasos de build para HTML estático
+      # No hay build necesario
     staticPublishPath: ./frontend
     envVars:
       - key: API_URL
