@@ -1,16 +1,13 @@
 # render.yaml - Configuración para Render Blueprint
-# CORREGIDO: startCommand en formato correcto para runtime python
 
 services:
   # ============================================
-  # SERVICIO 1: BACKEND (API)
+  # SERVICIO 1: BACKEND (API) 
   # ============================================
   - type: web
     name: centinela-backend
     runtime: python
-    repo: https://github.com/Aixa11/Centinela-Demo
-    branch: main
-    plan: starter
+    plan: free                         
     healthCheckPath: /
     buildCommand: |
       cd backend
@@ -21,17 +18,15 @@ services:
         value: 3.11.0
 
   # ============================================
-  # SERVICIO 2: FRONTEND (Dashboard)
+  # SERVICIO 2: FRONTEND (Dashboard) 
   # ============================================
   - type: web
     name: centinela-frontend
     runtime: static
-    repo: https://github.com/Aixa11/Centinela-Demo
-    branch: main
-    plan: starter
+    plan: free                        
     buildCommand: |
       cd frontend
-      # No hay build necesario
+      # Sin pasos de build para HTML estático
     staticPublishPath: ./frontend
     envVars:
       - key: API_URL
