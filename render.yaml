@@ -1,40 +1,27 @@
-# render.yaml - Configuración para Render Blueprint
-
+# render.yaml - Versión con frontend gratuito y backend en otro servicio
 services:
   # ============================================
-  # SERVICIO 1: BACKEND (API)
+  # SERVICIO 1: BACKEND (API) - Requiere tarjeta
   # ============================================
   - type: web
     name: centinela-backend
     runtime: python
     repo: https://github.com/Aixa11/Centinela-Demo
     branch: main
-    plan: starter                     # <--- CAMBIADO DE "free" A "starter"
-    healthCheckPath: /
-    buildCommand: |
-      cd backend
-      pip install -r requirements.txt
-    startCommand: |
-      cd backend
-      uvicorn app:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: PYTHON_VERSION
-        value: 3.11.0
-      - key: PORT
-        value: 8000
+    plan: starter
+    # ... el resto igual ...
 
   # ============================================
-  # SERVICIO 2: FRONTEND (Dashboard)
+  # SERVICIO 2: FRONTEND (Dashboard) - estatico
   # ============================================
   - type: web
     name: centinela-frontend
     runtime: static
     repo: https://github.com/Aixa11/Centinela-Demo
     branch: main
-    plan: starter                     # <--- CAMBIADO DE "free" A "starter"
+    plan: free               # <--- SOLO EL FRONTEND PUEDE SER FREE
     buildCommand: |
       cd frontend
-      # No hay build necesario para HTML puro
     staticPublishPath: ./frontend
     envVars:
       - key: API_URL
