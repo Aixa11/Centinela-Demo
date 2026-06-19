@@ -1,0 +1,23 @@
+# docker-compose.yml (en la raíz del proyecto)
+
+version: '3.8'
+
+services:
+  # Servicio para el Backend (API)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"   # Mapea el puerto 8000 del contenedor al 8000 de tu máquina
+    # No necesita variables de entorno extra por ahora
+
+  # Servicio para el Frontend (Dashboard)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"       # Mapea el puerto 80 del contenedor al 80 de tu máquina
+    depends_on:
+      - backend      # Asegura que el backend se inicie primero (aunque no es estrictamente necesario)

@@ -1,0 +1,10 @@
+# frontend/Dockerfile
+
+# Usamos una imagen de nginx (servidor web) muy pequeña
+FROM nginx:alpine
+
+# Copiamos nuestros archivos estáticos (HTML, CSS, JS) a la carpeta que nginx sirve por defecto
+COPY . /usr/share/nginx/html
+
+# Exponemos el puerto 80 (el puerto estándar para web)
+EXPOSE 80
